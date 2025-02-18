@@ -7,6 +7,8 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants;
 
 public class Telescope extends SubsystemBase {
     TalonFX firstMotor;
@@ -54,9 +56,27 @@ public class Telescope extends SubsystemBase {
      * Sets the target position for the telescope
      * @param position The desired position in rotations
      */
-    public void setPosition(double position) {
+    public void setPosition(double position, boolean overrideLimits) {
+        if (!overrideLimits){
+            if (position > Constants.TelescopeConstants.max_extension_ticks) {
+                position = Constants.TelescopeConstants.max_extension_ticks;
+            } else if (position < Constants.TelescopeConstants.min_extension_ticks) {
+                position = Constants.TelescopeConstants.min_extension_ticks;
+            }
+        }
         targetPosition = position;
-        firstMotor.setControl(m_positionVoltage.withPosition(position));
+        firstMotor.setControl(m_positionVoltage.withPosition(targetPosition));
+    }
+
+    /**
+     * Resets the encoder to make the current position the new zero point
+     */
+    public void resetEncoder() {
+        firstMotor.setPosition(0);
+        firstMotor.setControl(m_positionVoltage.withPosition(0));
+        targetPosition = 0;
+        
+        
     }
 
     /**
@@ -79,9 +99,9 @@ public class Telescope extends SubsystemBase {
      * Manually adjust the position by adding to the current position
      * @param delta The amount to add to the current position (positive = extend, negative = retract)
      */
-    public void adjustPosition(double delta) {
+    public void adjustPosition(double delta, boolean overrideLimits) {
         double newPosition = targetPosition + delta;
-        setPosition(newPosition);
+        setPosition(newPosition, overrideLimits);
     }
 
     /**
@@ -94,6 +114,6 @@ public class Telescope extends SubsystemBase {
 
     @Override
     public void periodic() {
-        // This method will be called once per scheduler run
+        SmartDashboard.putNumber("Telescope Position", getCurrentPosition());
     }
 }

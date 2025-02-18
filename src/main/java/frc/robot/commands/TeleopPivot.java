@@ -26,7 +26,8 @@ public class TeleopPivot extends Command {
         double translationVal = MathUtil.applyDeadband(translationSup.getAsDouble(), Constants.stickDeadband);
         
         s_Pivot.adjustPosition(
-            translationVal
+            translationVal, 
+            false
         );
     }
 }

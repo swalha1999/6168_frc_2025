@@ -144,4 +144,11 @@ public final class Constants {
             new TrapezoidProfile.Constraints(
                 kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
     }
+
+    public static final class TelescopeConstants {
+        public static final double max_extension_ticks = 73.0;
+        public static final double min_extension_ticks = 0.0;
+
+        
+    }
 }

@@ -6,6 +6,8 @@ import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Pivot extends SubsystemBase {
@@ -86,8 +88,9 @@ public class Pivot extends SubsystemBase {
     /**
      * Manually adjust the position by adding to the current position
      * @param delta The amount to add to the current position (positive = up, negative = down)
+     * @param overrideLimits Whether to override the limits of the pivot
      */
-    public void adjustPosition(double delta) {
+    public void adjustPosition(double delta, boolean overrideLimits) {
         double newPosition = targetPosition + delta;
         setPosition(newPosition);
     }
@@ -102,6 +105,6 @@ public class Pivot extends SubsystemBase {
 
     @Override
     public void periodic() {
-        // This method will be called once per scheduler run
+        SmartDashboard.putNumber("Pivot Position", getCurrentPosition());
     }
 }
