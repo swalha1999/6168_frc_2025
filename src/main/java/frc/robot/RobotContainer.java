@@ -37,6 +37,10 @@ public class RobotContainer {
     private final JoystickButton resetTelescope = new JoystickButton(driver, XboxController.Button.kStart.value);
     private final JoystickButton overrideLimits = new JoystickButton(driver, XboxController.Button.kBack.value);
 
+    private final JoystickButton pivotUp = new JoystickButton(driver, XboxController.Button.kY.value);
+    private final JoystickButton pivotDown = new JoystickButton(driver, XboxController.Button.kA.value);
+    
+
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
     private final Pivot s_Pivot = new Pivot();
@@ -46,18 +50,20 @@ public class RobotContainer {
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     public RobotContainer() {
-        // s_Swerve.setDefaultCommand(
-        // new TeleopSwerve(
-        // s_Swerve,
-        // () -> -driver.getRawAxis(translationAxis),
-        // () -> -driver.getRawAxis(strafeAxis),
-        // () -> driver.getRawAxis(rotationAxis),
-        // () -> robotCentric.getAsBoolean()
-        // )
-        // );
+        s_Swerve.setDefaultCommand(
+        new TeleopSwerve(
+        s_Swerve,
+        () -> driver.getRawAxis(translationAxis),
+        () -> driver.getRawAxis(strafeAxis),
+        () -> driver.getRawAxis(rotationAxis),
+        () -> robotCentric.getAsBoolean(),
+        () -> zeroGyro.getAsBoolean()
+        )
+        );
 
         s_Pivot.setDefaultCommand(
-                new TeleopPivot(s_Pivot, () -> -driver.getRawAxis(translationAxis)));
+                new TeleopPivot(s_Pivot, () -> pivotUp.getAsBoolean(), () -> pivotDown.getAsBoolean() )
+        );
 
         s_telescope.setDefaultCommand(
                 new TelescopeCommand(s_telescope,

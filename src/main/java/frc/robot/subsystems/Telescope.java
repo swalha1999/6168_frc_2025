@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
@@ -11,8 +12,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 
 public class Telescope extends SubsystemBase {
-    TalonFX firstMotor;
-    TalonFX secondUpMotor;
+    TalonFX mainMotor;
+    TalonFX slaveMotor;
 
     private final PositionVoltage m_positionVoltage = new PositionVoltage(0);
     public TalonFXConfiguration telescopeConfig;
@@ -40,16 +41,16 @@ public class Telescope extends SubsystemBase {
         telescopeConfig.Voltage.PeakForwardVoltage = 12;
         telescopeConfig.Voltage.PeakReverseVoltage = -12;
 
-        firstMotor = new TalonFX(0);
-        secondUpMotor = new TalonFX(6);
+        mainMotor = new TalonFX(0);
+        slaveMotor = new TalonFX(6);
 
-        firstMotor.getConfigurator().apply(telescopeConfig);
-        secondUpMotor.getConfigurator().apply(telescopeConfig);
+        mainMotor.getConfigurator().apply(telescopeConfig);
+        slaveMotor.getConfigurator().apply(telescopeConfig);
         
-        secondUpMotor.setControl(new Follower(firstMotor.getDeviceID(), false));
+        slaveMotor.setControl(new Follower(mainMotor.getDeviceID(), false));
         
         // Reset the position to 0 on startup
-        firstMotor.setPosition(0);
+        mainMotor.setPosition(0);
     }
 
     /**
@@ -65,18 +66,17 @@ public class Telescope extends SubsystemBase {
             }
         }
         targetPosition = position;
-        firstMotor.setControl(m_positionVoltage.withPosition(targetPosition));
+        mainMotor.setControl(m_positionVoltage.withPosition(targetPosition));
     }
 
     /**
      * Resets the encoder to make the current position the new zero point
      */
     public void resetEncoder() {
-        firstMotor.setPosition(0);
-        firstMotor.setControl(m_positionVoltage.withPosition(0));
+        mainMotor.setControl(new VelocityDutyCycle(0));
         targetPosition = 0;
-        
-        
+        mainMotor.setPosition(0);
+        mainMotor.setControl(m_positionVoltage.withPosition(0));
     }
 
     /**
@@ -84,7 +84,7 @@ public class Telescope extends SubsystemBase {
      * @return Current position in rotations
      */
     public double getCurrentPosition() {
-        return firstMotor.getPosition().getValueAsDouble();
+        return mainMotor.getPosition().getValueAsDouble();
     }
 
     /**
@@ -115,5 +115,6 @@ public class Telescope extends SubsystemBase {
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Telescope Position", getCurrentPosition());
+        SmartDashboard.putNumber("Telescope Target Position", getTargetPosition());
     }
 }

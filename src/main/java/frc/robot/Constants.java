@@ -146,9 +146,12 @@ public final class Constants {
     }
 
     public static final class TelescopeConstants {
-        public static final double max_extension_ticks = 73.0;
+        public static final double max_extension_ticks = 72.0;
         public static final double min_extension_ticks = 0.0;
+    }
 
-        
+    public static final class PivotConstants {
+        public static final double max_pivot_ticks = 14.0;
+        public static final double min_pivot_ticks = 0.0;
     }
 }
