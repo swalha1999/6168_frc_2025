@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.DigitalInput;
 
+import frc.robot.Constants;
+
 public class Pivot extends SubsystemBase {
     TalonFX mainMotor;
     TalonFX rightUpMotor;
@@ -126,6 +128,18 @@ public class Pivot extends SubsystemBase {
         mainMotor.setPosition(0);
         mainMotor.setControl(m_positionVoltage.withPosition(0));
     }
+
+    public void setPivotDownPosition() {
+        targetPosition = Constants.PivotConstants.min_pivot_ticks - 0.5;
+        mainMotor.setControl(m_positionVoltage.withPosition(Constants.PivotConstants.min_pivot_ticks - 0.5));
+    }
+
+    public void setPivotUpPosition() {
+        targetPosition = Constants.PivotConstants.max_pivot_ticks;
+        mainMotor.setControl(m_positionVoltage.withPosition(Constants.PivotConstants.max_pivot_ticks));
+    }
+
+
 
     @Override
     public void periodic() {

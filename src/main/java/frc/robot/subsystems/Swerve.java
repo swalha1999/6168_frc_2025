@@ -59,6 +59,26 @@ public class Swerve extends SubsystemBase {
         }
     }    
 
+    /**
+     * Calculates the heading correction for the robot
+     * @param targetHeading The target heading to correct to
+     * @return The heading correction
+     */
+    private double calculateHeadingCorrection(Rotation2d targetHeading) {
+        double currentHeading = getHeading().getRadians();
+        double targetHeadingRadians = targetHeading.getRadians();
+        
+        // Calculate the error (-π to π)
+        double error = targetHeadingRadians - currentHeading;
+        if (error > Math.PI) {
+            error -= 2 * Math.PI;
+        } else if (error < -Math.PI) {
+            error += 2 * Math.PI;
+        }
+        
+        return 0.2 * error;  // Simple proportional control
+    }
+
     /* Used by SwerveControllerCommand in Auto */
     public void setModuleStates(SwerveModuleState[] desiredStates) {
         SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.Swerve.maxSpeed);

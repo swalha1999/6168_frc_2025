@@ -24,11 +24,14 @@ public class TeleopPivot extends Command {
     public void execute() {
         /* Get Values, Deadband*/
         double translationVal = 0;
+        
         if (up.getAsBoolean()){
             translationVal+=0.1;
+            // s_Pivot.setPivotUpPosition();
         }
         if(down.getAsBoolean() && !s_Pivot.isAtLowerLimit()){
             translationVal-=0.1;
+            // s_Pivot.setPivotDownPosition();
         }
         
         s_Pivot.adjustPosition(
