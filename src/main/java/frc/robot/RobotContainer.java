@@ -5,7 +5,9 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.autos.*;
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
@@ -32,19 +34,47 @@ public class RobotContainer {
     private final int rotationAxis = XboxController.Axis.kRightX.value;
 
     /* Driver Buttons */
-    private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kY.value);
-    private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
-    private final JoystickButton resetTelescope = new JoystickButton(driver, XboxController.Button.kStart.value);
+    private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kStart.value);
+    // private final JoystickButton robotCentric = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
+    // private final JoystickButton resetTelescope = new JoystickButton(driver, XboxController.Button.kStart.value);
     private final JoystickButton overrideLimits = new JoystickButton(driver, XboxController.Button.kBack.value);
 
     private final JoystickButton pivotUp = new JoystickButton(driver, XboxController.Button.kY.value);
     private final JoystickButton pivotDown = new JoystickButton(driver, XboxController.Button.kA.value);
-    
+    private final JoystickButton endEffectorUp = new JoystickButton(driver, XboxController.Button.kX.value);
+    private final JoystickButton endEffectorDown = new JoystickButton(driver, XboxController.Button.kB.value);
+    private final JoystickButton intakeIn = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
+    private final JoystickButton intakeOut = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
 
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
     private final Pivot s_Pivot = new Pivot();
     private final Telescope s_telescope = new Telescope();
+    private final EndEffector endEffector = new EndEffector();
+
+
+    // take coral command
+    Command takeCoral = new SequentialCommandGroup(
+        new InstantCommand(() -> s_telescope.setPosition(1,false)),
+        new WaitUntilCommand(s_telescope::atTargetPosition),
+        new InstantCommand(() -> s_Pivot.setPosition(4)),
+        new InstantCommand(() -> endEffector.setAngle(9))
+    );
+
+    Command closeRobot = new SequentialCommandGroup(
+        new InstantCommand(() -> s_telescope.setPosition(1,false)),
+        new WaitUntilCommand(s_telescope::atTargetPosition),
+        new InstantCommand(() -> s_Pivot.setPosition(0)),
+        new InstantCommand(() -> endEffector.setAngle(0))
+    );
+
+    Command coralLevel4 = new SequentialCommandGroup(
+        new InstantCommand(() -> s_Pivot.setPosition(10)),
+        new InstantCommand(() -> endEffector.setAngle(40)),
+        new WaitUntilCommand(s_Pivot::atTargetPosition),
+        new InstantCommand(() -> s_telescope.setPosition(70,false))
+    ); 
+
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -56,21 +86,31 @@ public class RobotContainer {
         () -> driver.getRawAxis(translationAxis),
         () -> driver.getRawAxis(strafeAxis),
         () -> driver.getRawAxis(rotationAxis),
-        () -> robotCentric.getAsBoolean(),
-        () -> zeroGyro.getAsBoolean()
+        () -> false,
+        () -> overrideLimits.getAsBoolean()
         )
         );
 
-        s_Pivot.setDefaultCommand(
-                new TeleopPivot(s_Pivot, () -> pivotUp.getAsBoolean(), () -> pivotDown.getAsBoolean() )
-        );
-
+        endEffectorUp.onTrue(takeCoral);
+        pivotDown.onTrue(closeRobot);
+        pivotUp.onTrue(coralLevel4);
+       
         s_telescope.setDefaultCommand(
                 new TelescopeCommand(s_telescope,
                         () -> driver.getRawAxis(right_bumber) - driver.getRawAxis(left_bumber),
                         () -> overrideLimits.getAsBoolean(),
-                        () -> resetTelescope.getAsBoolean()
+                        () -> zeroGyro.getAsBoolean()
                     )
+        );
+
+        endEffector.setDefaultCommand(
+            new EndEffectorCommand(
+                endEffector,
+                () -> endEffectorUp.getAsBoolean(),
+                () -> endEffectorDown.getAsBoolean(),
+                () -> intakeIn.getAsBoolean(),
+                () -> intakeOut.getAsBoolean()
+            )
         );
 
         // Configure the button bindings

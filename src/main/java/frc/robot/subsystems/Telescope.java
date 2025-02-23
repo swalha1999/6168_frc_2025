@@ -4,6 +4,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityDutyCycle;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
@@ -17,12 +18,7 @@ public class Telescope extends SubsystemBase {
 
     private final PositionVoltage m_positionVoltage = new PositionVoltage(0);
     public TalonFXConfiguration telescopeConfig;
-
-    // Constants for PID
-    private static final double kP = 1.2;
-    private static final double kI = 0.1;
-    private static final double kD = 0.0;
-    private static final double kV = 0.12;
+    final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
 
     private double targetPosition = 0.0;
 
@@ -31,15 +27,21 @@ public class Telescope extends SubsystemBase {
 
         // Configure the motor
         telescopeConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        
-        // Configure PID
-        telescopeConfig.Slot0.kP = kP;
-        telescopeConfig.Slot0.kI = kI;
-        telescopeConfig.Slot0.kD = kD;
-        telescopeConfig.Slot0.kV = kV;
 
-        telescopeConfig.Voltage.PeakForwardVoltage = 12;
-        telescopeConfig.Voltage.PeakReverseVoltage = -12;
+        // Set slot 0 gains
+        var slot0Configs = telescopeConfig.Slot0;
+        slot0Configs.kS = 0.25; // Add 0.25 V output to overcome static friction
+        slot0Configs.kV = 0.12; // A velocity target of 1 rps results in 0.12 V output
+        slot0Configs.kA = 0.01; // An acceleration of 1 rps/s requires 0.01 V output
+        slot0Configs.kP = 4.8; // A position error of 2.5 rotations results in 12 V output
+        slot0Configs.kI = 0; // no output for integrated error
+        slot0Configs.kD = 0.1; // A velocity error of 1 rps results in 0.1 V output
+
+        // Set Motion Magic settings
+        var motionMagicConfigs = telescopeConfig.MotionMagic;
+        motionMagicConfigs.MotionMagicCruiseVelocity = 40; // Target cruise velocity of 80 rps
+        motionMagicConfigs.MotionMagicAcceleration = 32; // Target acceleration of 160 rps/s (0.5 seconds)
+        motionMagicConfigs.MotionMagicJerk = 1600; // Target jerk of 1600 rps/s/s (0.1 seconds)
 
         mainMotor = new TalonFX(0);
         slaveMotor = new TalonFX(6);
@@ -66,7 +68,7 @@ public class Telescope extends SubsystemBase {
             }
         }
         targetPosition = position;
-        mainMotor.setControl(m_positionVoltage.withPosition(targetPosition));
+        setMotionMagicPosition(position);
     }
 
     /**
@@ -92,7 +94,7 @@ public class Telescope extends SubsystemBase {
      * @return true if at target position (within tolerance)
      */
     public boolean atTargetPosition() {
-        return Math.abs(getCurrentPosition() - targetPosition) < 0.1; // 0.1 rotation tolerance
+        return Math.abs(getCurrentPosition() - targetPosition) < 3; // 0.1 rotation tolerance
     }
 
     /**
@@ -110,6 +112,13 @@ public class Telescope extends SubsystemBase {
      */
     public double getTargetPosition() {
         return targetPosition;
+    }
+
+    /**
+     * Creates a Motion Magic request and sets the target position to 100 rotations
+     */
+    public void setMotionMagicPosition(double position) {   
+        mainMotor.setControl(m_request.withPosition(position));
     }
 
     @Override

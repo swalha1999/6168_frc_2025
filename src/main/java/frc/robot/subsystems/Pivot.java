@@ -6,6 +6,7 @@ import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -21,13 +22,9 @@ public class Pivot extends SubsystemBase {
     TalonFX rightDownMotor;
     
     private final PositionVoltage m_positionVoltage = new PositionVoltage(0);
+    final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
     public TalonFXConfiguration pivotConfig;
     
-    // Constants for PID
-    private static final double kP = 1.2;
-    private static final double kI = 0.1;
-    private static final double kD = 0.0;
-    private static final double kV = 0.12;
     
     private double targetPosition = 0.0;
     
@@ -38,16 +35,22 @@ public class Pivot extends SubsystemBase {
         pivotConfig = new TalonFXConfiguration();
 
         // Configure the motor
-        pivotConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        pivotConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         
-        // Configure PID
-        pivotConfig.Slot0.kP = kP;
-        pivotConfig.Slot0.kI = kI;
-        pivotConfig.Slot0.kD = kD;
-        pivotConfig.Slot0.kV = kV;
+        // Set slot 0 gains
+        var slot0Configs = pivotConfig.Slot0;
+        slot0Configs.kS = 0.25; // Add 0.25 V output to overcome static friction
+        slot0Configs.kV = 0.12; // A velocity target of 1 rps results in 0.12 V output
+        slot0Configs.kA = 0.01; // An acceleration of 1 rps/s requires 0.01 V output
+        slot0Configs.kP = 4.8; // A position error of 2.5 rotations results in 12 V output
+        slot0Configs.kI = 0; // no output for integrated error
+        slot0Configs.kD = 0.1; // A velocity error of 1 rps results in 0.1 V output
 
-        pivotConfig.Voltage.PeakForwardVoltage = 12;
-        pivotConfig.Voltage.PeakReverseVoltage = -12;
+        // Set Motion Magic settings
+        var motionMagicConfigs = pivotConfig.MotionMagic;
+        motionMagicConfigs.MotionMagicCruiseVelocity = 40; // Target cruise velocity of 80 rps
+        motionMagicConfigs.MotionMagicAcceleration = 48; // Target acceleration of 16 rps/s (0.5 seconds)
+        motionMagicConfigs.MotionMagicJerk = 1600; // Target jerk of 1600 rps/s/s (0.1 seconds)
 
         mainMotor = new TalonFX(3);
         rightUpMotor = new TalonFX(2);
@@ -76,7 +79,7 @@ public class Pivot extends SubsystemBase {
      */
     public void setPosition(double position) {
         targetPosition = position;
-        mainMotor.setControl(m_positionVoltage.withPosition(position));
+        mainMotor.setControl(m_request.withPosition(position));
     }
 
     /**
@@ -92,7 +95,7 @@ public class Pivot extends SubsystemBase {
      * @return true if at target position (within tolerance)
      */
     public boolean atTargetPosition() {
-        return Math.abs(getCurrentPosition() - targetPosition) < 0.1; // 0.1 rotation tolerance
+        return Math.abs(getCurrentPosition() - targetPosition) < 1; // 0.1 rotation tolerance
     }
 
     /**
@@ -139,7 +142,12 @@ public class Pivot extends SubsystemBase {
         mainMotor.setControl(m_positionVoltage.withPosition(Constants.PivotConstants.max_pivot_ticks));
     }
 
-
+    /**
+     * Creates a Motion Magic request and sets the target position to 100 rotations
+     */
+    public void setMotionMagicPosition() {
+        mainMotor.setControl(m_request.withPosition(100));
+    }
 
     @Override
     public void periodic() {

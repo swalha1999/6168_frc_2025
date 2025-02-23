@@ -146,12 +146,40 @@ public final class Constants {
     }
 
     public static final class TelescopeConstants {
-        public static final double max_extension_ticks = 72.0;
+        public static final double max_extension_ticks = 74.0;
         public static final double min_extension_ticks = 0.0;
     }
 
     public static final class PivotConstants {
         public static final double max_pivot_ticks = 14.0;
         public static final double min_pivot_ticks = 0.0;
+    }
+
+    public static final class EndEffectorConstants {
+        public static final int ANGLE_MOTOR_ID = 53;  // Change ID as needed
+        public static final int INTAKE_MOTOR_ID = 61; // Change ID as needed
+        
+        // Angle Motor Constants
+        public static final double ANGLE_kP = 0.1;
+        public static final double ANGLE_kI = 0.0;
+        public static final double ANGLE_kD = 0.0;
+        public static final double ANGLE_kFF = 0.0;
+        
+        // Angle Constraints
+        public static final double MAX_ANGLE_POSITION = 90.0; // degrees
+        public static final double MIN_ANGLE_POSITION = 0.0;  // degrees
+        
+        // Intake Motor Constants
+        public static final double INTAKE_SPEED = 0.7;  // 70% speed for intake
+        public static final double EJECT_SPEED = -0.7;  // 70% speed for ejecting
+        
+        // Current Limits
+        public static final int ANGLE_CURRENT_LIMIT = 30; // amps
+        public static final int INTAKE_CURRENT_LIMIT = 40; // amps
+
+        public static final double ANGLE_OUTPUT_MIN = -1.0;
+        public static final double ANGLE_OUTPUT_MAX = 1.0;
+
+        public static final double ANGLE_TOLERANCE = 1.0;
     }
 }

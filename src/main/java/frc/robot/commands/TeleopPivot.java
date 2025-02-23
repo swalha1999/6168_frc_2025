@@ -26,18 +26,18 @@ public class TeleopPivot extends Command {
         double translationVal = 0;
         
         if (up.getAsBoolean()){
-            translationVal+=0.1;
-            // s_Pivot.setPivotUpPosition();
+            // translationVal+=0.1;
+            s_Pivot.setPivotUpPosition();
         }
         if(down.getAsBoolean() && !s_Pivot.isAtLowerLimit()){
-            translationVal-=0.1;
-            // s_Pivot.setPivotDownPosition();
+            // translationVal-=0.1;
+            s_Pivot.setPivotDownPosition();
         }
         
-        s_Pivot.adjustPosition(
-            translationVal, 
-            false
-        );
+        // s_Pivot.adjustPosition(
+        //     translationVal, 
+        //     false
+        // );
 
         SmartDashboard.putNumber("the pivot command", translationVal);
     }
