@@ -1,8 +1,11 @@
 package frc.robot.commands;
 
 import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
 import frc.robot.subsystems.EndEffector;
 
 public class EndEffectorCommand extends Command {
@@ -11,6 +14,7 @@ public class EndEffectorCommand extends Command {
     private final BooleanSupplier angleDown;
     private final BooleanSupplier intakeIn;
     private final BooleanSupplier intakeOut;
+    private final DoubleSupplier endEffectorAngle;
 
     /**
      * Creates a new EndEffectorCommand.
@@ -24,26 +28,29 @@ public class EndEffectorCommand extends Command {
         BooleanSupplier angleUp,
         BooleanSupplier angleDown,
         BooleanSupplier intakeIn,
-        BooleanSupplier intakeOut
+        BooleanSupplier intakeOut,
+        DoubleSupplier endEffectorAngle
     ) {
         this.endEffector = endEffector;
         this.angleUp = angleUp;
         this.angleDown = angleDown;
         this.intakeIn = intakeIn;
         this.intakeOut = intakeOut;
+        this.endEffectorAngle = endEffectorAngle; 
         addRequirements(endEffector);
     }
 
     @Override
     public void execute() {
         // Update the target angle based on joystick input
+        double angle_speed = 0;
         if (angleUp.getAsBoolean()) {
-            endEffector.adjustAngle(0.1);
+            angle_speed+=0.1;
         } else if (angleDown.getAsBoolean()) {
-            endEffector.adjustAngle(-0.1);
-        } else {
-            endEffector.adjustAngle(0);
+            angle_speed-=0.1;
         }
+        angle_speed += MathUtil.applyDeadband(endEffectorAngle.getAsDouble(), Constants.stickDeadband);
+        endEffector.adjustAngle(angle_speed);
         
         // Update intake speed
         if (intakeIn.getAsBoolean()) {

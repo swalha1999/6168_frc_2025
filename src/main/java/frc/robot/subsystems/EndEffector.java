@@ -6,6 +6,7 @@ import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.ClosedLoopSlot;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -26,6 +27,7 @@ public class EndEffector extends SubsystemBase {
     private final SparkClosedLoopController closedLoopController;
 
     private final SparkFlexConfig angleConfig = new SparkFlexConfig();
+    private final SparkFlexConfig intakeConfig = new SparkFlexConfig();
     
     private double targetAngle = 0.0;
 
@@ -48,15 +50,19 @@ public class EndEffector extends SubsystemBase {
         .p(0.1)
         .i(0)
         .d(0)
-        .outputRange(-1, 1)
+        .outputRange(-0.25, 0.25)
         .p(0.0001, ClosedLoopSlot.kSlot1)
         .i(0, ClosedLoopSlot.kSlot1)
         .d(0, ClosedLoopSlot.kSlot1)
         .velocityFF(1.0 / 5767, ClosedLoopSlot.kSlot1)
-        .outputRange(-1, 1, ClosedLoopSlot.kSlot1);
+        .outputRange(-0.2, 0.2, ClosedLoopSlot.kSlot1);
+
+        intakeConfig.idleMode(IdleMode.kBrake);
+        angleConfig.idleMode(IdleMode.kBrake);
 
         angleMotor.configure(angleConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
-
+        intakeMotor.configure(intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+        
         // Set motor inversions if needed
         // angleMotor.setInverted(false);
         // intakeMotor.setInverted(false);
