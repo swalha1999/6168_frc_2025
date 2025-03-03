@@ -12,8 +12,7 @@ public class EndEffectorCommand extends Command {
     private final EndEffector endEffector;
     private final BooleanSupplier angleUp;
     private final BooleanSupplier angleDown;
-    private final BooleanSupplier intakeIn;
-    private final BooleanSupplier intakeOut;
+    private final DoubleSupplier intakeSignle;
     private final DoubleSupplier endEffectorAngle;
 
     /**
@@ -27,15 +26,13 @@ public class EndEffectorCommand extends Command {
         EndEffector endEffector, 
         BooleanSupplier angleUp,
         BooleanSupplier angleDown,
-        BooleanSupplier intakeIn,
-        BooleanSupplier intakeOut,
+        DoubleSupplier intakeSignle,
         DoubleSupplier endEffectorAngle
     ) {
         this.endEffector = endEffector;
         this.angleUp = angleUp;
         this.angleDown = angleDown;
-        this.intakeIn = intakeIn;
-        this.intakeOut = intakeOut;
+        this.intakeSignle = intakeSignle;
         this.endEffectorAngle = endEffectorAngle; 
         addRequirements(endEffector);
     }
@@ -53,13 +50,7 @@ public class EndEffectorCommand extends Command {
         endEffector.adjustAngle(angle_speed);
         
         // Update intake speed
-        if (intakeIn.getAsBoolean()) {
-            endEffector.setIntakeSpeed(0.2);
-        } else if (intakeOut.getAsBoolean()) {
-            endEffector.setIntakeSpeed(-0.2);
-        } else {
-            endEffector.setIntakeSpeed(0);
-        }
+        endEffector.setIntakeSpeed(MathUtil.applyDeadband(intakeSignle.getAsDouble(), Constants.stickDeadband));
     }
 
     @Override

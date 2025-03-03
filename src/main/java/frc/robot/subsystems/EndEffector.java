@@ -32,6 +32,7 @@ public class EndEffector extends SubsystemBase {
     private double targetAngle = 0.0;
 
     public EndEffector() {
+
         // Initialize motors
         angleMotor = new SparkFlex(EndEffectorConstants.ANGLE_MOTOR_ID, MotorType.kBrushless);
         intakeMotor = new SparkFlex(EndEffectorConstants.INTAKE_MOTOR_ID, MotorType.kBrushless);
@@ -90,6 +91,14 @@ public class EndEffector extends SubsystemBase {
     
     public void setIntakeSpeed(double speed) {
         intakeMotor.set(speed);
+    }
+
+    public double getCurrentPosition(){
+        return angleEncoder.getPosition();
+    }
+
+    public boolean atTargetPosition(){
+        return Math.abs(getCurrentPosition() - this.targetAngle) > 2;
     }
     
 } 
