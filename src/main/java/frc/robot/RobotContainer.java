@@ -3,12 +3,12 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 
 
-import edu.wpi.first.wpilibj.Joystick;
+
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
@@ -26,27 +26,8 @@ import frc.robot.subsystems.*;
  */
 public class RobotContainer {
     /* Controllers */
-    private final Joystick driver = new Joystick(0);
+    private final CommandXboxController driver = new CommandXboxController(0);
 
-    /* Drive Controls */
-    private final int translationAxis = XboxController.Axis.kLeftY.value;
-    private final int right_bumber = XboxController.Axis.kRightTrigger.value;
-    private final int left_bumber = XboxController.Axis.kLeftTrigger.value;
-    private final int strafeAxis = XboxController.Axis.kLeftX.value;
-    private final int rotationAxis = XboxController.Axis.kRightX.value;
-    // private final int Pivotangle = XboxController.Axis.kRightY.value;
-
-    /* Driver Buttons */
-    private final JoystickButton zeroGyro = new JoystickButton(driver, XboxController.Button.kStart.value);
-    
-    private final JoystickButton driverY = new JoystickButton(driver, XboxController.Button.kY.value);
-    private final JoystickButton driverA = new JoystickButton(driver, XboxController.Button.kA.value);
-    private final JoystickButton driverX = new JoystickButton(driver, XboxController.Button.kX.value);
-    private final JoystickButton driverB = new JoystickButton(driver, XboxController.Button.kB.value);
-    private final JoystickButton driverLeftBumper = new JoystickButton(driver, XboxController.Button.kLeftBumper.value);
-    private final JoystickButton driverLeftStick = new JoystickButton(driver, XboxController.Button.kLeftStick.value);
-    private final JoystickButton driverRightBumper = new JoystickButton(driver, XboxController.Button.kRightBumper.value);
-    
     /* Subsystems */
     private final Swerve s_Swerve = new Swerve();
     private final Pivot s_Pivot = new Pivot();
@@ -60,7 +41,7 @@ public class RobotContainer {
     Command takeCoral = new SequentialCommandGroup(
         new InstantCommand(() -> s_telescope.setPosition(0,false)),
         new WaitUntilCommand(s_telescope::atTargetPosition),
-        new InstantCommand(() -> s_Pivot.setPosition(3.6)),
+        new InstantCommand(() -> s_Pivot.setPosition(3.7)),
         new WaitUntilCommand(s_Pivot::atTargetPosition),
         new InstantCommand(() -> endEffector.setAngle(12)),
         new WaitUntilCommand(endEffector::atTargetPosition)
@@ -102,9 +83,9 @@ public class RobotContainer {
         new WaitUntilCommand(s_Pivot::atTargetPosition),
         new InstantCommand(() -> endEffector.setAngle(30)),
         new WaitUntilCommand(endEffector::atTargetPosition),
-        new InstantCommand(() -> s_telescope.setPosition(60,false)),
+        new InstantCommand(() -> s_telescope.setPosition(35,false)),
         new WaitUntilCommand(s_telescope::atTargetPosition),
-        new InstantCommand(() -> endEffector.setAngle(41.8))
+        new InstantCommand(() -> endEffector.setAngle(40))
     );
 
     Command coralLevel3 = new SequentialCommandGroup(
@@ -143,11 +124,11 @@ public class RobotContainer {
         s_Swerve.setDefaultCommand(
             new TeleopSwerve(
                 s_Swerve,
-                () -> -driver.getRawAxis(translationAxis),
-                () -> -driver.getRawAxis(strafeAxis),
-                () -> -driver.getRawAxis(rotationAxis),
-                () -> driverLeftStick.getAsBoolean(),
-                () -> zeroGyro.getAsBoolean()
+                () -> -driver.getLeftY(),
+                () -> -driver.getLeftX(),
+                () -> -driver.getRightX(),
+                () -> driver.leftStick().getAsBoolean(),
+                () -> driver.start().getAsBoolean()
                 )
         );
        
@@ -155,7 +136,7 @@ public class RobotContainer {
                 new TelescopeCommand(s_telescope,
                         () -> 0,
                         () -> false,
-                        () -> zeroGyro.getAsBoolean()
+                        () -> false
                     )
         );
 
@@ -164,7 +145,7 @@ public class RobotContainer {
                 endEffector,
                 () -> false,
                 () -> false,
-                () -> (driver.getRawAxis(right_bumber) - driver.getRawAxis(left_bumber)) * 0.5 ,
+                () -> (driver.getRightTriggerAxis() - driver.getLeftTriggerAxis()) * 0.3 ,
                 () -> 0
             )
         );
@@ -179,16 +160,22 @@ public class RobotContainer {
 
     
     private void configureButtonBindings() {
-        driverX.onTrue(takeCoral);
-        driverA.onTrue(QuickCloseRobot);
+        driver.a().onTrue(QuickCloseRobot);
 
-        driverY.whileTrue(coralLevel4);
-        driverY.onFalse(TallCloseRobot);
+        driver.y().whileTrue(coralLevel4);
+        driver.y().onFalse(TallCloseRobot);
         
-        driverB.whileTrue(new GoToLeft(s_Swerve));
-        driverB.onFalse(new StopAuto(s_Swerve));
+        driver.start().and(driver.back()).onTrue(new InstantCommand(() -> s_Swerve.zeroAutoHeading()));
         
+        driver.pov(270).whileTrue(new GoTo(s_Swerve, Constants.TargetPostioons.Red.CORAL_GOALS_LEFT));
+        driver.pov(270).onFalse(new StopAuto(s_Swerve));
 
+        driver.pov(90).whileTrue(new GoTo(s_Swerve, Constants.TargetPostioons.Red.CORAL_GOALS_RIGHT));
+        driver.pov(90).onFalse(new StopAuto(s_Swerve));
+
+        driver.pov(180).whileTrue(new GoTo(s_Swerve, Constants.TargetPostioons.Red.FEEDER_GOALS));
+        driver.pov(180).onFalse(new StopAuto(s_Swerve));
+        driver.pov(180).onTrue(takeCoral);
     }
 
     /**

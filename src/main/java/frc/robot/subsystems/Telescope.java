@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionVoltage;
@@ -39,8 +40,8 @@ public class Telescope extends SubsystemBase {
 
         // Set Motion Magic settings
         var motionMagicConfigs = telescopeConfig.MotionMagic;
-        motionMagicConfigs.MotionMagicCruiseVelocity = 40; // Target cruise velocity of 80 rps
-        motionMagicConfigs.MotionMagicAcceleration = 32; // Target acceleration of 160 rps/s (0.5 seconds)
+        motionMagicConfigs.MotionMagicCruiseVelocity = 120; // Target cruise velocity of 80 rps
+        motionMagicConfigs.MotionMagicAcceleration = 90; // Target acceleration of 160 rps/s (0.5 seconds)
         motionMagicConfigs.MotionMagicJerk = 1600; // Target jerk of 1600 rps/s/s (0.1 seconds)
 
         mainMotor = new TalonFX(0);

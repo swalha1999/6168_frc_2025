@@ -10,6 +10,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -39,6 +41,8 @@ public class Swerve extends SubsystemBase {
     public SwerveModule[] mSwerveMods;
     public Pigeon2 gyro;
     RobotConfig config;
+    StructPublisher<Pose2d> publisher = NetworkTableInstance.getDefault()
+        .getStructTopic("MyPose", Pose2d.struct).publish();
 
     public Swerve() {
         gyro = new Pigeon2(Constants.Swerve.pigeonID);
@@ -52,11 +56,18 @@ public class Swerve extends SubsystemBase {
                 new SwerveModule(3, Constants.Swerve.Mod3.constants)
         };
 
-        poseEstimator = new SwerveDrivePoseEstimator(Constants.Swerve.swerveKinematics, getGyroYaw(),
-                getModulePositions(), new Pose2d());
-        
         autoPoseEstimator = new SwerveDrivePoseEstimator(Constants.Swerve.swerveKinematics, getGyroYaw(),
-                getModulePositions(), new Pose2d());
+                getModulePositions(), new Pose2d(0,0,Rotation2d.fromDegrees(0)));
+        Optional<Alliance> ally = DriverStation.getAlliance();
+        if (ally.isPresent()) {
+            if (ally.get() == Alliance.Red) {
+                autoPoseEstimator = new SwerveDrivePoseEstimator(Constants.Swerve.swerveKinematics, getGyroYaw(),
+                getModulePositions(), new Pose2d(0,0,Rotation2d.fromDegrees(180)));
+            }
+        }
+        
+        poseEstimator = new SwerveDrivePoseEstimator(Constants.Swerve.swerveKinematics, getGyroYaw(),
+                getModulePositions(), new Pose2d(0,0 ,Rotation2d.fromDegrees(180)));
 
         poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.7, 0.7, 0.99));
         autoPoseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.7, 0.7, 0.99));
@@ -69,8 +80,8 @@ public class Swerve extends SubsystemBase {
         }
 
          AutoBuilder.configure(
-            this::getPose, // Robot pose supplier
-            this::setPose, // Method to reset odometry (will be called if your auto has a starting pose)
+            this::getAutoPose, // Robot pose supplier
+            this::setAutoPose, // Method to reset odometry (will be called if your auto has a starting pose)
             this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
             (speeds, feedforwards) -> driveRobotRelative(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
             new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
@@ -231,8 +242,8 @@ public class Swerve extends SubsystemBase {
                 }
 
                 // Add vision measurement
-                poseEstimator.addVisionMeasurement(
-                    new Pose2d(poseEstimate.pose.getX(), poseEstimate.pose.getY(), getHeading()),
+                autoPoseEstimator.addVisionMeasurement(
+                    new Pose2d(poseEstimate.pose.getX(), poseEstimate.pose.getY(), getBlueHeading()),
                     poseEstimate.timestampSeconds
                 );
 
@@ -245,15 +256,12 @@ public class Swerve extends SubsystemBase {
             e.printStackTrace();
         }
 
-        // Update general pose and module data
-        SmartDashboard.putNumber("Gyro Yaw", getGyroYaw().getDegrees());
-        SmartDashboard.putNumber("Pose X", getPose().getTranslation().getX());
-        SmartDashboard.putNumber("Pose Y", getPose().getTranslation().getY());
+        publisher.set(autoPoseEstimator.getEstimatedPosition());
 
-        for (SwerveModule mod : mSwerveMods) {
-            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " CANcoder", mod.getCANcoder().getDegrees());
-            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Angle", mod.getPosition().angle.getDegrees());
-            SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Velocity", mod.getState().speedMetersPerSecond);
-        }
+        // for (SwerveModule mod : mSwerveMods) {
+        //     SmartDashboard.putNumber("Mod " + mod.moduleNumber + " CANcoder", mod.getCANcoder().getDegrees());
+        //     SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Angle", mod.getPosition().angle.getDegrees());
+        //     SmartDashboard.putNumber("Mod " + mod.moduleNumber + " Velocity", mod.getState().speedMetersPerSecond);
+        // }
     }
 }
