@@ -1,10 +1,6 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-
-
-
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -36,6 +32,11 @@ public class RobotContainer {
 
     /* Autos */
      private final SendableChooser<Command> autoChooser;
+
+    // Goal position instances
+    private final Constants.TargetPostioons.Coral_Goals_Left coralGoalsLeft = new Constants.TargetPostioons().new Coral_Goals_Left();
+    private final Constants.TargetPostioons.Coral_Goals_Right coralGoalsRight = new Constants.TargetPostioons().new Coral_Goals_Right();
+    private final Constants.TargetPostioons.Feeder_Goals feederGoals = new Constants.TargetPostioons().new Feeder_Goals();
 
     // take coral command
     Command takeCoral = new SequentialCommandGroup(
@@ -167,13 +168,13 @@ public class RobotContainer {
         
         driver.start().and(driver.back()).onTrue(new InstantCommand(() -> s_Swerve.zeroAutoHeading()));
         
-        driver.pov(270).whileTrue(new GoTo(s_Swerve,  Constants.TargetPostioons.CORAL_GOALS_LEFT));
+        driver.pov(270).whileTrue(new GoTo(s_Swerve, coralGoalsLeft));
         driver.pov(270).onFalse(new StopAuto(s_Swerve));
 
-        driver.pov(90).whileTrue(new GoTo(s_Swerve, Constants.TargetPostioons.CORAL_GOALS_RIGHT));
+        driver.pov(90).whileTrue(new GoTo(s_Swerve, coralGoalsRight));
         driver.pov(90).onFalse(new StopAuto(s_Swerve));
 
-        driver.pov(180).whileTrue(new GoTo(s_Swerve, Constants.TargetPostioons.FEEDER_GOALS));
+        driver.pov(180).whileTrue(new GoTo(s_Swerve, feederGoals));
         driver.pov(180).onFalse(new StopAuto(s_Swerve));
         driver.pov(180).onTrue(takeCoral);
     }

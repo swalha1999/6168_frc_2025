@@ -55,6 +55,7 @@ public class GoTo extends Command {
 
             AutoBuilder.followPath(path).schedule();
         } catch (Exception e) {
+            System.out.println("Going to: " + currentGoal);
             System.out.println("Falid to generate path");
         }
 

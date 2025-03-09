@@ -198,6 +198,9 @@ public final class Constants {
     public static final class TargetPostioons {
 
         public class Goals {
+            // Declare these as non-final so they can be properly overridden
+            public Pose2d[] Red = {};
+            public Pose2d[] Blue = {};
 
             Goals() {
             }
@@ -209,62 +212,80 @@ public final class Constants {
             public Pose2d[] getBlue() {
                 return Blue;
             }
-
-            public final Pose2d[] Red = {};
-            public final Pose2d[] Blue = {};
         }
 
         public final class Coral_Goals_Left extends Goals {
-            public final Pose2d[] Red = {
-                    new Pose2d(14.36, 3.81, Rotation2d.fromDegrees(180)), // 7L
-                    new Pose2d(13.47, 2.75, Rotation2d.fromDegrees(120)), // 6L
-                    new Pose2d(14.01, 4.95, Rotation2d.fromDegrees(240)), // 8L
-                    new Pose2d(12.69, 5.27, Rotation2d.fromDegrees(300)), // 9L
+            // Properly initialize the arrays in the constructor to override parent class
+            public Coral_Goals_Left() {
+                Red = new Pose2d[] {
                     new Pose2d(11.81, 4.01, Rotation2d.fromDegrees(0)), // 10L
-                    new Pose2d(12.41, 2.92, Rotation2d.fromDegrees(60)) // 11L
-            };
+                    new Pose2d(12.41, 2.92, Rotation2d.fromDegrees(60)), // 11L
+                    new Pose2d(13.47, 2.75, Rotation2d.fromDegrees(120)), // 6L
+                    new Pose2d(14.36, 3.81, Rotation2d.fromDegrees(180)), // 7L
+                    new Pose2d(14.01, 4.95, Rotation2d.fromDegrees(240)), // 8L
+                    new Pose2d(12.69, 5.27, Rotation2d.fromDegrees(300)) // 9L
+                };
 
-            public final Pose2d[] Blue = {
+                Blue = new Pose2d[] {
                     new Pose2d(3.19, 4.21, Rotation2d.fromDegrees(0)), // 18L
-            };
+                    new Pose2d(3.655, 2.946, Rotation2d.fromDegrees(60)), // 17L
+                    new Pose2d(5.038, 2.777, Rotation2d.fromDegrees(120)), // 22L
+                    new Pose2d(5.845, 3.852, Rotation2d.fromDegrees(180)), // 21L
+                    new Pose2d(5.313, 5.122, Rotation2d.fromDegrees(240)), // 20L
+                    new Pose2d(3.659, 5.114, Rotation2d.fromDegrees(300)), // 19L
+                };
+            }
         }
 
         public final class Coral_Goals_Right extends Goals {
-            public final Pose2d[] Red = {
+            // Properly initialize the arrays in the constructor to override parent class
+            public Coral_Goals_Right() {
+                Red = new Pose2d[] {
                     new Pose2d(14.37, 4.16, Rotation2d.fromDegrees(180)), // 7R
                     new Pose2d(13.74, 2.90, Rotation2d.fromDegrees(120)), // 6R
                     new Pose2d(13.68, 5.16, Rotation2d.fromDegrees(240)), // 8R
                     new Pose2d(12.44, 5.13, Rotation2d.fromDegrees(300)), // 9R
                     new Pose2d(11.81, 3.73, Rotation2d.fromDegrees(0)), // 10R
                     new Pose2d(12.71, 2.75, Rotation2d.fromDegrees(60)) // 11R
-            };
+                };
 
-            public final Pose2d[] Blue = {
+                Blue = new Pose2d[] {
                     new Pose2d(3.19, 3.89, Rotation2d.fromDegrees(0)), // 18R
-            };
+                    new Pose2d(3.965, 2.801, Rotation2d.fromDegrees(60)), // 18R
+                    new Pose2d(5.277, 2.968, Rotation2d.fromDegrees(120)), // 18R
+                    new Pose2d(5.796, 4.182, Rotation2d.fromDegrees(180)), // 18R
+                    new Pose2d(5.007, 5.232, Rotation2d.fromDegrees(240)), // 18R
+                    new Pose2d(3.679, 5.057, Rotation2d.fromDegrees(300)) // 18R
+                };
+            }
         }
 
         public final class Feeder_Goals extends Goals {
-            public final Pose2d[] Red = {
+            // Properly initialize the arrays in the constructor to override parent class
+            public Feeder_Goals() {
+                Red = new Pose2d[] {
                     new Pose2d(16.475, 0.931, Rotation2d.fromDegrees(-55)),
                     new Pose2d(16.366, 6.960, Rotation2d.fromDegrees(55)), // 7R
-            };
+                };
 
-            public final Pose2d[] Blue = {
+                Blue = new Pose2d[] {
                     new Pose2d(1.155, 1.054, Rotation2d.fromDegrees(-125)),
-                    new Pose2d(16.366, 6.945, Rotation2d.fromDegrees(125)), // 7R
-            };
+                    new Pose2d(1.133, 6.945, Rotation2d.fromDegrees(125)),
+                };
+            }
         }
 
         public final class Large_Processor_Goals extends Goals {
-
-            public final Pose2d[] Red = {
+            // Properly initialize the arrays in the constructor to override parent class
+            public Large_Processor_Goals() {
+                Red = new Pose2d[] {
                     new Pose2d(14.36, 3.73, Rotation2d.fromDegrees(90)), // 7L
-            };
+                };
 
-            public final Pose2d[] Blue = {
+                Blue = new Pose2d[] {
                     new Pose2d(1.133, 3.73, Rotation2d.fromDegrees(-90)), // 7L
-            };
+                };
+            }
         }
     }
 }
