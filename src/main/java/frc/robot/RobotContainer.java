@@ -167,13 +167,13 @@ public class RobotContainer {
         
         driver.start().and(driver.back()).onTrue(new InstantCommand(() -> s_Swerve.zeroAutoHeading()));
         
-        driver.pov(270).whileTrue(new GoTo(s_Swerve, Constants.TargetPostioons.Red.CORAL_GOALS_LEFT));
+        driver.pov(270).whileTrue(new GoTo(s_Swerve,  Constants.TargetPostioons.CORAL_GOALS_LEFT));
         driver.pov(270).onFalse(new StopAuto(s_Swerve));
 
-        driver.pov(90).whileTrue(new GoTo(s_Swerve, Constants.TargetPostioons.Red.CORAL_GOALS_RIGHT));
+        driver.pov(90).whileTrue(new GoTo(s_Swerve, Constants.TargetPostioons.CORAL_GOALS_RIGHT));
         driver.pov(90).onFalse(new StopAuto(s_Swerve));
 
-        driver.pov(180).whileTrue(new GoTo(s_Swerve, Constants.TargetPostioons.Red.FEEDER_GOALS));
+        driver.pov(180).whileTrue(new GoTo(s_Swerve, Constants.TargetPostioons.FEEDER_GOALS));
         driver.pov(180).onFalse(new StopAuto(s_Swerve));
         driver.pov(180).onTrue(takeCoral);
     }

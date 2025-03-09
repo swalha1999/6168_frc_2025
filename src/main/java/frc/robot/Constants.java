@@ -196,10 +196,26 @@ public final class Constants {
     }
 
     public static final class TargetPostioons {
-        public static final class Red {
 
-            // Left goals
-            public static final Pose2d[] CORAL_GOALS_LEFT = {
+        public class Goals {
+
+            Goals() {
+            }
+
+            public Pose2d[] getRed() {
+                return Red;
+            }
+
+            public Pose2d[] getBlue() {
+                return Blue;
+            }
+
+            public final Pose2d[] Red = {};
+            public final Pose2d[] Blue = {};
+        }
+
+        public final class Coral_Goals_Left extends Goals {
+            public final Pose2d[] Red = {
                     new Pose2d(14.36, 3.81, Rotation2d.fromDegrees(180)), // 7L
                     new Pose2d(13.47, 2.75, Rotation2d.fromDegrees(120)), // 6L
                     new Pose2d(14.01, 4.95, Rotation2d.fromDegrees(240)), // 8L
@@ -208,8 +224,13 @@ public final class Constants {
                     new Pose2d(12.41, 2.92, Rotation2d.fromDegrees(60)) // 11L
             };
 
-            // Right goals
-            public static final Pose2d[] CORAL_GOALS_RIGHT = {
+            public final Pose2d[] Blue = {
+                    new Pose2d(3.19, 4.21, Rotation2d.fromDegrees(0)), // 18L
+            };
+        }
+
+        public final class Coral_Goals_Right extends Goals {
+            public final Pose2d[] Red = {
                     new Pose2d(14.37, 4.16, Rotation2d.fromDegrees(180)), // 7R
                     new Pose2d(13.74, 2.90, Rotation2d.fromDegrees(120)), // 6R
                     new Pose2d(13.68, 5.16, Rotation2d.fromDegrees(240)), // 8R
@@ -218,42 +239,32 @@ public final class Constants {
                     new Pose2d(12.71, 2.75, Rotation2d.fromDegrees(60)) // 11R
             };
 
-            public static final Pose2d[] FEEDER_GOALS = {
-                    new Pose2d(16.475, 0.931, Rotation2d.fromDegrees(-55)), 
+            public final Pose2d[] Blue = {
+                    new Pose2d(3.19, 3.89, Rotation2d.fromDegrees(0)), // 18R
+            };
+        }
+
+        public final class Feeder_Goals extends Goals {
+            public final Pose2d[] Red = {
+                    new Pose2d(16.475, 0.931, Rotation2d.fromDegrees(-55)),
                     new Pose2d(16.366, 6.960, Rotation2d.fromDegrees(55)), // 7R
-                    
             };
 
-            public static final Pose2d[] ALRGE_PROCCESOR_GOALS = {
-                    new Pose2d(14.36, 3.73, Rotation2d.fromDegrees(180)), // 7L
-            };
-
-        };
-
-        public static final class Blue {
-
-            // Left goals
-            public static final Pose2d[] CORAL_GOALS_LEFT = {
-                new Pose2d(3.19, 4.21, Rotation2d.fromDegrees(0)), // 18L
-                    
-            };
-
-            // Right goals
-            public static final Pose2d[] CORAL_GOALS_RIGHT = {
-                new Pose2d(3.19, 3.89, Rotation2d.fromDegrees(0)), // 18R
-    
-            };
-
-            public static final Pose2d[] FEEDER_GOALS = {
-                    new Pose2d(1.155, 1.054, Rotation2d.fromDegrees(-125)), 
+            public final Pose2d[] Blue = {
+                    new Pose2d(1.155, 1.054, Rotation2d.fromDegrees(-125)),
                     new Pose2d(16.366, 6.945, Rotation2d.fromDegrees(125)), // 7R
-                    
+            };
+        }
+
+        public final class Large_Processor_Goals extends Goals {
+
+            public final Pose2d[] Red = {
+                    new Pose2d(14.36, 3.73, Rotation2d.fromDegrees(90)), // 7L
             };
 
-            public static final Pose2d[] ALRGE_PROCCESOR_GOALS = {
-                    new Pose2d(1.133, 3.73, Rotation2d.fromDegrees(180)), // 7L
+            public final Pose2d[] Blue = {
+                    new Pose2d(1.133, 3.73, Rotation2d.fromDegrees(-90)), // 7L
             };
-
-        };
+        }
     }
 }
