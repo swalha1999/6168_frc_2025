@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
@@ -31,7 +32,7 @@ public class RobotContainer {
     private final EndEffector endEffector = new EndEffector();
 
     /* Autos */
-     private final SendableChooser<Command> autoChooser;
+    private final SendableChooser<Command> autoChooser;
 
     // Goal position instances
     private final Constants.TargetPostioons.Coral_Goals_Left coralGoalsLeft = new Constants.TargetPostioons().new Coral_Goals_Left();
@@ -40,76 +41,62 @@ public class RobotContainer {
 
     // take coral command
     Command takeCoral = new SequentialCommandGroup(
-        new InstantCommand(() -> s_telescope.setPosition(0,false)),
-        new WaitUntilCommand(s_telescope::atTargetPosition),
-        new InstantCommand(() -> s_Pivot.setPosition(3.7)),
-        new WaitUntilCommand(s_Pivot::atTargetPosition),
-        new InstantCommand(() -> endEffector.setAngle(12)),
-        new WaitUntilCommand(endEffector::atTargetPosition)
-    );
+            new InstantCommand(() -> s_telescope.setPosition(0, false)),
+            new WaitUntilCommand(s_telescope::atTargetPosition),
+            new InstantCommand(() -> s_Pivot.setPosition(3.7)),
+            new WaitUntilCommand(s_Pivot::atTargetPosition),
+            new InstantCommand(() -> endEffector.setAngle(12)),
+            new WaitUntilCommand(endEffector::atTargetPosition));
 
     Command TallCloseRobot = new SequentialCommandGroup(
-        new InstantCommand(() -> endEffector.setAngle(20)),
-        new WaitUntilCommand(endEffector::atTargetPosition),
-        new WaitUntilCommand(s_telescope::atTargetPosition),
-        new InstantCommand(() -> s_telescope.setPosition(0,false)),
-        new WaitUntilCommand(s_telescope::atTargetPosition),
-        new InstantCommand(() -> s_Pivot.setPosition(0)),
-        new InstantCommand(() -> endEffector.setAngle(0))
-    );
+            new InstantCommand(() -> endEffector.setAngle(20)),
+            new WaitUntilCommand(endEffector::atTargetPosition),
+            new WaitUntilCommand(s_telescope::atTargetPosition),
+            new InstantCommand(() -> s_telescope.setPosition(0, false)),
+            new WaitUntilCommand(s_telescope::atTargetPosition),
+            new InstantCommand(() -> s_Pivot.setPosition(0)),
+            new InstantCommand(() -> endEffector.setAngle(0)));
 
-    Command QuickCloseRobot = new SequentialCommandGroup(
-        new InstantCommand(() -> endEffector.setAngle(5)),
-        new WaitUntilCommand(endEffector::atTargetPosition),
-        new WaitUntilCommand(s_telescope::atTargetPosition),
-        new InstantCommand(() -> s_telescope.setPosition(0,false)),
-        new WaitUntilCommand(s_telescope::atTargetPosition),
-        new InstantCommand(() -> s_Pivot.setPosition(0)),
-        new InstantCommand(() -> endEffector.setAngle(0))
-    );
-
-    Command VeryQuickCloseRobot = new SequentialCommandGroup(
-        new InstantCommand(() -> endEffector.setAngle(5)),
-        new WaitUntilCommand(endEffector::atTargetPosition),
-        new WaitUntilCommand(s_telescope::atTargetPosition),
-        new InstantCommand(() -> s_telescope.setPosition(0,false)),
-        new WaitUntilCommand(s_telescope::atTargetPosition),
-        new InstantCommand(() -> s_Pivot.setPosition(0)),
-        new InstantCommand(() -> endEffector.setAngle(0))
-    );
-
-    Command coralLevel4 = new SequentialCommandGroup(
-        new WaitUntilCommand(s_telescope::atTargetPosition),
-        new InstantCommand(() -> s_Pivot.setPosition(11)),
-        new WaitUntilCommand(s_Pivot::atTargetPosition),
-        new InstantCommand(() -> endEffector.setAngle(30)),
-        new WaitUntilCommand(endEffector::atTargetPosition),
-        new InstantCommand(() -> s_telescope.setPosition(35,false)),
-        new WaitUntilCommand(s_telescope::atTargetPosition),
-        new InstantCommand(() -> endEffector.setAngle(40))
-    );
+    Command timerCloseRobot = new SequentialCommandGroup(
+            new InstantCommand(() -> endEffector.setAngle(0)),
+            new WaitUntilCommand(endEffector::atTargetPosition),
+            new WaitUntilCommand(s_telescope::atTargetPosition),
+            new WaitCommand(2),
+            new InstantCommand(() -> s_telescope.setPosition(0, false)),
+            new WaitUntilCommand(s_telescope::atTargetPosition),
+            new InstantCommand(() -> s_Pivot.setPosition(0)),
+            new InstantCommand(() -> endEffector.setAngle(0)));
 
     Command coralLevel3 = new SequentialCommandGroup(
-        new WaitUntilCommand(s_telescope::atTargetPosition),
-        new InstantCommand(() -> s_telescope.setPosition(0.6,false)),
-        new InstantCommand(() -> s_Pivot.setPosition(8.6)),
-        // new InstantCommand(() -> endEffector.setAngle(41)),
-        new WaitUntilCommand(s_Pivot::atTargetPosition)
-    );
-    
+            new WaitUntilCommand(s_telescope::atTargetPosition),
+            new InstantCommand(() -> s_Pivot.setPosition(11)),
+            new WaitUntilCommand(s_Pivot::atTargetPosition),
+            new InstantCommand(() -> endEffector.setAngle(30)),
+            new WaitUntilCommand(endEffector::atTargetPosition),
+            new InstantCommand(() -> s_telescope.setPosition(35, false)),
+            new WaitUntilCommand(s_telescope::atTargetPosition),
+            new InstantCommand(() -> endEffector.setAngle(40)));
+
+
     Command coralLevel2 = new SequentialCommandGroup(
-        new WaitUntilCommand(s_telescope::atTargetPosition),
-        new InstantCommand(() -> s_telescope.setPosition(0.6,false)),
-        new InstantCommand(() -> s_Pivot.setPosition(8.6)),
-        new WaitUntilCommand(s_Pivot::atTargetPosition),
-        new InstantCommand(() -> endEffector.setAngle(41))
-    );
+            new WaitUntilCommand(s_telescope::atTargetPosition),
+            new InstantCommand(() -> s_telescope.setPosition(0.6, false)),
+            new InstantCommand(() -> s_Pivot.setPosition(10)),
+            new WaitUntilCommand(s_Pivot::atTargetPosition),
+            new InstantCommand(() -> endEffector.setAngle(45)));
 
     Command coralLevel1 = new SequentialCommandGroup(
+            new WaitUntilCommand(s_telescope::atTargetPosition),
+            new InstantCommand(() -> s_telescope.setPosition(0.6, false)),
+            new InstantCommand(() -> s_Pivot.setPosition(8.6)),
+            // new InstantCommand(() -> endEffector.setAngle(41)),
+            new WaitUntilCommand(s_Pivot::atTargetPosition));
+
+    Command removeBall = new SequentialCommandGroup(
         new WaitUntilCommand(s_telescope::atTargetPosition),
-        new InstantCommand(() -> s_telescope.setPosition(0.6,false)),
+        new InstantCommand(() -> s_telescope.setPosition(0.6, false)),
         new InstantCommand(() -> s_Pivot.setPosition(8.6)),
-        // new InstantCommand(() -> endEffector.setAngle(41)),
+        new InstantCommand(() -> endEffector.setAngle(41)),
         new WaitUntilCommand(s_Pivot::atTargetPosition)
     );
 
@@ -123,51 +110,38 @@ public class RobotContainer {
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
         s_Swerve.setDefaultCommand(
-            new TeleopSwerve(
-                s_Swerve,
-                () -> -driver.getLeftY(),
-                () -> -driver.getLeftX(),
-                () -> -driver.getRightX(),
-                () -> driver.leftStick().getAsBoolean(),
-                () -> driver.start().getAsBoolean()
-                )
-        );
-       
-        s_telescope.setDefaultCommand(
-                new TelescopeCommand(s_telescope,
-                        () -> 0,
-                        () -> false,
-                        () -> false
-                    )
-        );
+                new TeleopSwerve(
+                        s_Swerve,
+                        () -> -driver.getLeftY(),
+                        () -> -driver.getLeftX(),
+                        () -> -driver.getRightX(),
+                        () -> driver.leftBumper().getAsBoolean(),
+                        () -> driver.start().getAsBoolean()));
 
         endEffector.setDefaultCommand(
-            new EndEffectorCommand(
-                endEffector,
-                () -> false,
-                () -> false,
-                () -> (driver.getRightTriggerAxis() - driver.getLeftTriggerAxis()) * 0.3 ,
-                () -> 0
-            )
-        );
+                new EndEffectorCommand(
+                        endEffector,
+                        () -> false,
+                        () -> false,
+                        () -> (driver.getRightTriggerAxis() - driver.getLeftTriggerAxis()) * 0.3,
+                        () -> 0));
 
-        s_Pivot.setDefaultCommand(
-            new TeleopPivot(s_Pivot, () -> 0)
-        );
 
         // Configure the button bindings
         configureButtonBindings();
-    }   
+    }
 
-    
     private void configureButtonBindings() {
-        driver.a().onTrue(QuickCloseRobot);
+        driver.a().onTrue(timerCloseRobot);
 
-        driver.y().whileTrue(coralLevel4);
+        driver.y().whileTrue(coralLevel3);
         driver.y().onFalse(TallCloseRobot);
-        
+
+        driver.x().onTrue(coralLevel2);
+        driver.x().onFalse(timerCloseRobot);
+
         driver.start().and(driver.back()).onTrue(new InstantCommand(() -> s_Swerve.zeroAutoHeading()));
-        
+
         driver.pov(270).whileTrue(new GoTo(s_Swerve, coralGoalsLeft));
         driver.pov(270).onFalse(new StopAuto(s_Swerve));
 

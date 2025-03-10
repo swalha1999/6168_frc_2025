@@ -241,21 +241,21 @@ public final class Constants {
             // Properly initialize the arrays in the constructor to override parent class
             public Coral_Goals_Right() {
                 Red = new Pose2d[] {
-                    new Pose2d(14.37, 4.16, Rotation2d.fromDegrees(180)), // 7R
-                    new Pose2d(13.74, 2.90, Rotation2d.fromDegrees(120)), // 6R
-                    new Pose2d(13.68, 5.16, Rotation2d.fromDegrees(240)), // 8R
-                    new Pose2d(12.44, 5.13, Rotation2d.fromDegrees(300)), // 9R
                     new Pose2d(11.81, 3.73, Rotation2d.fromDegrees(0)), // 10R
-                    new Pose2d(12.71, 2.75, Rotation2d.fromDegrees(60)) // 11R
+                    new Pose2d(12.71, 2.75, Rotation2d.fromDegrees(60)), // 11R
+                    new Pose2d(13.74, 2.90, Rotation2d.fromDegrees(120)), // 6R
+                    new Pose2d(14.37, 4.16, Rotation2d.fromDegrees(180)), // 7R
+                    new Pose2d(13.68, 5.16, Rotation2d.fromDegrees(240)), // 8R
+                    new Pose2d(12.44, 5.13, Rotation2d.fromDegrees(300)) // 9R
                 };
 
                 Blue = new Pose2d[] {
                     new Pose2d(3.19, 3.89, Rotation2d.fromDegrees(0)), // 18R
-                    new Pose2d(3.965, 2.801, Rotation2d.fromDegrees(60)), // 18R
-                    new Pose2d(5.277, 2.968, Rotation2d.fromDegrees(120)), // 18R
-                    new Pose2d(5.796, 4.182, Rotation2d.fromDegrees(180)), // 18R
-                    new Pose2d(5.007, 5.232, Rotation2d.fromDegrees(240)), // 18R
-                    new Pose2d(3.679, 5.057, Rotation2d.fromDegrees(300)) // 18R
+                    new Pose2d(3.965, 2.801, Rotation2d.fromDegrees(60)), // 17R
+                    new Pose2d(5.277, 2.968, Rotation2d.fromDegrees(120)), // 22R
+                    new Pose2d(5.796, 4.182, Rotation2d.fromDegrees(180)), // 21R
+                    new Pose2d(5.007, 5.232, Rotation2d.fromDegrees(240)), // 20R
+                    new Pose2d(3.679, 5.057, Rotation2d.fromDegrees(300)) // 19R
                 };
             }
         }

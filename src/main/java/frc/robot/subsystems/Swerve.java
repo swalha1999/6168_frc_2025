@@ -57,12 +57,12 @@ public class Swerve extends SubsystemBase {
         };
 
         autoPoseEstimator = new SwerveDrivePoseEstimator(Constants.Swerve.swerveKinematics, getGyroYaw(),
-                getModulePositions(), new Pose2d(0,0,Rotation2d.fromDegrees(0)));
+                getModulePositions(), new Pose2d(0,0,Rotation2d.fromDegrees(180)));
         Optional<Alliance> ally = DriverStation.getAlliance();
         if (ally.isPresent()) {
             if (ally.get() == Alliance.Red) {
                 autoPoseEstimator = new SwerveDrivePoseEstimator(Constants.Swerve.swerveKinematics, getGyroYaw(),
-                getModulePositions(), new Pose2d(0,0,Rotation2d.fromDegrees(180)));
+                getModulePositions(), new Pose2d(0,0,Rotation2d.fromDegrees(0)));
             }
         }
         
